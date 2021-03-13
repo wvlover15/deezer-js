@@ -2,25 +2,25 @@ const got = require('got')
 const {map_artist_album, map_user_track, map_user_artist, map_user_album, map_user_playlist} = require('./utils.js')
 
 // Explicit Content Lyrics
-export const LyricsStatus = {
-  NOT_EXPLICIT: 0 // Not Explicit
-  EXPLICIT: 1 // Explicit
-  UNKNOWN: 2 // Unknown
-  EDITED: 3 // Edited
-  PARTIALLY_EXPLICIT: 4 // Partially Explicit (Album "lyrics" only)
-  PARTIALLY_UNKNOWN: 5 // Partially Unknown (Album "lyrics" only)
-  NO_ADVICE: 6 // No Advice Available
+const LyricsStatus = {
+  NOT_EXPLICIT: 0, // Not Explicit
+  EXPLICIT: 1, // Explicit
+  UNKNOWN: 2, // Unknown
+  EDITED: 3, // Edited
+  PARTIALLY_EXPLICIT: 4, // Partially Explicit (Album "lyrics" only)
+  PARTIALLY_UNKNOWN: 5, // Partially Unknown (Album "lyrics" only)
+  NO_ADVICE: 6, // No Advice Available
   PARTIALLY_NO_ADVICE: 7 // Partially No Advice Available (Album "lyrics" only)
 }
 
-export const PlaylistStatus = {
-  PUBLIC: 0
-  PRIVATE: 1
-  COLLABORATIVE: 2
+const PlaylistStatus = {
+  PUBLIC: 0,
+  PRIVATE: 1,
+  COLLABORATIVE: 2,
 }
 
 
-export const EMPTY_TRACK_OBJ = {
+const EMPTY_TRACK_OBJ = {
   SNG_ID: 0,
   SNG_TITLE: '',
   DURATION: 0,
@@ -33,7 +33,7 @@ export const EMPTY_TRACK_OBJ = {
   ART_NAME: ""
 }
 
-export class GW{
+class GW{
   constructor(cookie_jar, headers){
     this.http_headers = headers
     this.cookie_jar = cookie_jar
@@ -42,27 +42,28 @@ export class GW{
   async api_call(method, args, params){
     if (typeof args == "unasyncined") args = {}
     if (typeof params == "unasyncined") params = {}
-    p = {
+    let p = {
       api_version: "1.0",
-      api_token: method == 'deezer.getUserData' ? 'null' : this._get_token(),
+      api_token: method == 'deezer.getUserData' ? 'null' : await this._get_token(),
       input: '3',
       method: method,
-      ..params
+      ...params
     }
+    let result_json
     try{
-      const result_json = await got.get("http://www.deezer.com/ajax/gw-light.php", {
+      result_json = await got.post("http://www.deezer.com/ajax/gw-light.php", {
         searchParams: p,
         json: args,
         cookieJar: this.cookie_jar,
         headers: this.http_headers,
         timeout: 30000
       }).json()
-    }catch{
+    }catch (e){
+      console.log(e)
       await new Promise(r => setTimeout(r, 2000)) // sleep(2000ms)
       return await this.api_call(method, args, params)
     }
-    if (result_json.error.length):
-        throw new GWAPIError(result_json.error)
+    if (result_json.error.length) throw new GWAPIError(result_json.error)
     return result_json.results
   }
 
@@ -71,28 +72,28 @@ export class GW{
     return token_data.checkForm
   }
 
-  async get_user_data(){
-    return await this.api_call('deezer.getUserData')
+  get_user_data(){
+    return this.api_call('deezer.getUserData')
   }
 
-  async get_user_profile_page(user_id, tab, limit=10){
-    return await this.api_call('deezer.pageProfile', {user_id, tab, nb: limit})
+  get_user_profile_page(user_id, tab, limit=10){
+    return this.api_call('deezer.pageProfile', {user_id, tab, nb: limit})
   }
 
-  async get_child_accounts(){
-    return await this.api_call('deezer.getChildAccounts')
+  get_child_accounts(){
+    return this.api_call('deezer.getChildAccounts')
   }
 
-  async get_track(sng_id){
-    return await this.api_call('song.getData', {sng_id})
+  get_track(sng_id){
+    return this.api_call('song.getData', {sng_id})
   }
 
-  async get_track_page(sng_id){
-    return await this.api_call('deezer.pageTrack', {sng_id})
+  get_track_page(sng_id){
+    return this.api_call('deezer.pageTrack', {sng_id})
   }
 
-  async get_track_lyrics(sng_id){
-    return await this.api_call('song.getLyrics', {sng_id})
+  get_track_lyrics(sng_id){
+    return this.api_call('song.getLyrics', {sng_id})
   }
 
   async get_tracks_gw(sng_ids){
@@ -110,12 +111,12 @@ export class GW{
     return tracks_array
   }
 
-  async get_album(alb_id){
-    return await this.api_call('album.getData', {alb_id})
+  get_album(alb_id){
+    return this.api_call('album.getData', {alb_id})
   }
 
-  async get_album_page(alb_id){
-    return await this.api_call('deezer.pageAlbum', {
+  get_album_page(alb_id){
+    return this.api_call('deezer.pageAlbum', {
       alb_id,
       lang: 'en',
       header: True,
@@ -134,11 +135,11 @@ export class GW{
     return tracks_array
   }
 
-  async get_artist(art_id){
-    return await this.api_call('artist.getData', {art_id})
+  get_artist(art_id){
+    return this.api_call('artist.getData', {art_id})
   }
 
-  async get_artist_page(art_id){
+  get_artist_page(art_id){
     return this.api_call('deezer.pageArtist', {
       art_id,
       lang: 'en',
@@ -157,8 +158,8 @@ export class GW{
     return tracks_array
   }
 
-  async get_artist_discography(art_id, index=0, limit=25){
-    return await this.api_call('album.getDiscography', {
+  get_artist_discography(art_id, index=0, limit=25){
+    return this.api_call('album.getDiscography', {
       art_id,
       discography_mode:"all",
       nb: limit,
@@ -167,12 +168,12 @@ export class GW{
     })
   }
 
-  async get_playlist(playlist_id){
-    return await this.api_call('playlist.getData', {playlist_id})
+  get_playlist(playlist_id){
+    return this.api_call('playlist.getData', {playlist_id})
   }
 
-  async get_playlist_page(playlist_id){
-    return await this.api_call('deezer.pagePlaylist', {
+  get_playlist_page(playlist_id){
+    return this.api_call('deezer.pagePlaylist', {
       playlist_id,
       lang: 'en',
       header: True,
@@ -190,12 +191,12 @@ export class GW{
     return tracks_array
   }
 
-  async create_playlist(title, status=PlaylistStatus.PUBLIC, description, songs=[]){
+  create_playlist(title, status=PlaylistStatus.PUBLIC, description, songs=[]){
     newSongs = []
     songs.forEach(song => {
       newSongs.push([song, 0])
     });
-    return await this.api_call('playlist.create', {
+    return this.api_call('playlist.create', {
       title,
       status,
       description,
@@ -203,12 +204,12 @@ export class GW{
     })
   }
 
-  async edit_playlist(playlist_id, title, status, description, songs=[]){
+  edit_playlist(playlist_id, title, status, description, songs=[]){
     newSongs = []
     songs.forEach(song => {
       newSongs.push([song, 0])
     });
-    return await this.api_call('playlist.update', {
+    return this.api_call('playlist.update', {
       playlist_id,
       title,
       status,
@@ -217,74 +218,74 @@ export class GW{
     })
   }
 
-  async add_songs_to_playlist(playlist_id, songs, offset=-1){
+  add_songs_to_playlist(playlist_id, songs, offset=-1){
     newSongs = []
     songs.forEach(song => {
       newSongs.push([song, 0])
     });
-    return await this.api_call('playlist.addSongs', {
+    return this.api_call('playlist.addSongs', {
       playlist_id,
       songs: newSongs,
       offset
     })
   }
 
-  async add_song_to_playlist(playlist_id, sng_id, offset=-1){
-    return await this.add_songs_to_playlist(playlist_id, [sng_id], offset)
+  add_song_to_playlist(playlist_id, sng_id, offset=-1){
+    return this.add_songs_to_playlist(playlist_id, [sng_id], offset)
   }
 
-  async remove_songs_from_playlist(playlist_id, songs){
+  remove_songs_from_playlist(playlist_id, songs){
     newSongs = []
     songs.forEach(song => {
       newSongs.push([song, 0])
     });
-    return await this.api_call('playlist.deleteSongs', {
+    return this.api_call('playlist.deleteSongs', {
         playlist_id,
         songs: newSongs
     })
   }
 
-  async remove_song_from_playlist(playlist_id, sng_id){
-    return await this.remove_songs_from_playlist(playlist_id, [sng_id])
+  remove_song_from_playlist(playlist_id, sng_id){
+    return this.remove_songs_from_playlist(playlist_id, [sng_id])
   }
 
-  async delete_playlist(playlist_id){
-    return await this.api_call('playlist.delete', {playlist_id})
+  delete_playlist(playlist_id){
+    return this.api_call('playlist.delete', {playlist_id})
   }
 
-  async add_song_to_favorites(sng_id){
-    return await this.gw_api_call('favorite_song.add', {sng_id})
+  add_song_to_favorites(sng_id){
+    return this.gw_api_call('favorite_song.add', {sng_id})
   }
 
-  async remove_song_from_favorites(sng_id){
-    return await this.gw_api_call('favorite_song.remove', {sng_id})
+  remove_song_from_favorites(sng_id){
+    return this.gw_api_call('favorite_song.remove', {sng_id})
   }
 
-  async add_album_to_favorites(alb_id){
-    return await this.gw_api_call('album.addFavorite', {alb_id})
+  add_album_to_favorites(alb_id){
+    return this.gw_api_call('album.addFavorite', {alb_id})
   }
 
-  async remove_album_from_favorites(alb_id){
-    return await this.gw_api_call('album.deleteFavorite', {alb_id})
+  remove_album_from_favorites(alb_id){
+    return this.gw_api_call('album.deleteFavorite', {alb_id})
   }
 
-  async add_artist_to_favorites(art_id){
-    return await this.gw_api_call('artist.addFavorite', {art_id})
+  add_artist_to_favorites(art_id){
+    return this.gw_api_call('artist.addFavorite', {art_id})
   }
 
-  async remove_artist_from_favorites(art_id){
-    return await this.gw_api_call('artist.deleteFavorite', {art_id})
+  remove_artist_from_favorites(art_id){
+    return this.gw_api_call('artist.deleteFavorite', {art_id})
   }
 
-  async add_playlist_to_favorites(playlist_id){
-    return await this.gw_api_call('playlist.addFavorite', {PARENT_PLAYLIST_ID: playlist_id})
+  add_playlist_to_favorites(playlist_id){
+    return this.gw_api_call('playlist.addFavorite', {PARENT_PLAYLIST_ID: playlist_id})
   }
 
-  async remove_playlist_from_favorites(playlist_id){
-    return await this.gw_api_call('playlist.deleteFavorite', {PLAYLIST_ID: playlist_id})
+  remove_playlist_from_favorites(playlist_id){
+    return this.gw_api_call('playlist.deleteFavorite', {PLAYLIST_ID: playlist_id})
   }
 
-  async get_page(page){
+  get_page(page){
     let params = {
       gateway_input: JSON.stringify({
         PAGE: page,
@@ -294,18 +295,18 @@ export class GW{
             'channel',
             'album'
           ],
-          horizontal-grid: [
+          'horizontal-grid': [
             'album'
           ],
         },
         LANG: 'en'
       })
     }
-    return await this.api_call('page.get', params=params)
+    return this.api_call('page.get', params=params)
   }
 
-  async search(query, index=0, limit=10, suggest=true, artist_suggest=true, top_tracks=true){
-    return await this.api_call('deezer.pageSearch', {
+  search(query, index=0, limit=10, suggest=true, artist_suggest=true, top_tracks=true){
+    return this.api_call('deezer.pageSearch', {
       query,
       start: index,
       nb: limit,
@@ -315,8 +316,8 @@ export class GW{
     })
   }
 
-  async search_music(query, type, index=0, limit=10){
-    return await this.api_call('search.music', {
+  search_music(query, type, index=0, limit=10){
+    return this.api_call('search.music', {
       query,
       filter: "ALL",
       output: type,
@@ -354,7 +355,7 @@ export class GW{
         if (release.ROLE_ID == 5) { // Handle albums where the artist is featured
           if (!result.featured) result.featured = []
           result.featured.push(obj)
-        } else if release.ROLE_ID == 0 { // Handle "more" albums
+        } else if (release.ROLE_ID == 0) { // Handle "more" albums
           if (!result.more) result.more = []
           result.more.push(obj)
           result.all.push(obj)
@@ -421,9 +422,17 @@ export class GW{
 }
 
 // Base class for Deezer exceptions
-export class GWAPIError extends Error {
+class GWAPIError extends Error {
   constructor(message) {
     super(message);
     this.name = "APIError";
   }
+}
+
+module.exports = {
+  LyricsStatus,
+  PlaylistStatus,
+  EMPTY_TRACK_OBJ,
+  GW,
+  GWAPIError
 }

@@ -1,7 +1,7 @@
 const RELEASE_TYPE = ["single", "album", "compile", "ep", "bundle"]
 
 // maps gw-light api user/tracks to standard api
-export function map_user_track(track){
+function map_user_track(track){
   return {
     id: track.SNG_ID,
     title: track.SNG_TITLE,
@@ -39,7 +39,7 @@ export function map_user_track(track){
 }
 
 // maps gw-light api user/artists to standard api
-export function map_user_artist(artist){
+function map_user_artist(artist){
   return {
     id: artist.ART_ID,
     name: artist.ART_NAME,
@@ -57,7 +57,7 @@ export function map_user_artist(artist){
 
 
 // maps gw-light api user/albums to standard api
-export function map_user_album(album){
+function map_user_album(album){
   return {
     id: album.ALB_ID,
     title: album.ALB_TITLE,
@@ -81,7 +81,7 @@ export function map_user_album(album){
 
 
 // maps gw-light api user/playlists to standard api
-export function map_user_playlist(playlist, default_user_name=""){
+function map_user_playlist(playlist, default_user_name=""){
   return {
     id: playlist.PLAYLIST_ID,
     title: playlist.TITLE,
@@ -105,7 +105,7 @@ export function map_user_playlist(playlist, default_user_name=""){
 
 
 // maps gw-light api albums to standard api
-export function map_album(album){
+function map_album(album){
   return {
     id: album.ALB_ID,
     title: album.ALB_TITLE,
@@ -144,7 +144,7 @@ export function map_album(album){
 
 
 // maps gw-light api artist/albums to standard api
-export function map_artist_album(album){
+function map_artist_album(album){
   return {
     id: album.ALB_ID,
     title: album.ALB_TITLE,
@@ -169,7 +169,7 @@ export function map_artist_album(album){
 
 
 // maps gw-light api playlists to standard api
-export function map_playlist(playlist){
+function map_playlist(playlist){
   return {
     id: playlist.PLAYLIST_ID,
     title: playlist.TITLE,
@@ -200,13 +200,23 @@ export function map_playlist(playlist){
   }
 }
 
-
 // Cleanup terms that can hurt search results
-export function clean_search_query(term){
+function clean_search_query(term){
   term = term.replaceAll(/ feat[\.]? /g, " ")
   term = term.replaceAll(/ ft[\.]? /g, " ")
   term = term.replaceAll(/\(feat[\.]? /g, " ")
   term = term.replaceAll(/\(ft[\.]? /g, " ")
   term = term.replace(' & ', " ").replace('–', "-").replace('—', "-")
   return term
+}
+
+module.exports = {
+  map_user_track,
+  map_user_artist,
+  map_user_album,
+  map_user_playlist,
+  map_album,
+  map_artist_album,
+  map_playlist,
+  clean_search_query
 }

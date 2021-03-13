@@ -4,18 +4,18 @@ const { API } = require('./api.js')
 const { GW } = require('./gw.js')
 
 // Number associtation for formats
-export const TrackFormats = {
-  FLAC    : 9
-  MP3_320 : 3
-  MP3_128 : 1
-  MP4_RA3 : 15
-  MP4_RA2 : 14
-  MP4_RA1 : 13
-  DEFAULT : 8
-  LOCAL   : 0
+const TrackFormats = {
+  FLAC    : 9,
+  MP3_320 : 3,
+  MP3_128 : 1,
+  MP4_RA3 : 15,
+  MP4_RA2 : 14,
+  MP4_RA1 : 13,
+  DEFAULT : 8,
+  LOCAL   : 0,
 }
 
-export class Deezer{
+class Deezer{
   constructor(accept_language=""){
     this.http_headers = {
       "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36",
@@ -74,14 +74,16 @@ export class Deezer{
 
   async login_via_arl(arl, child=0){
     arl = arl.trim()
-    // TODO: Check how to do this
-    let cookie_obj = Cookie({
+
+    // Create cookie
+    let cookie_obj = new Cookie({
       key: 'arl',
       value: arl,
+      domain: '.deezer.com',
       path: "/",
       httpOnly: true
     })
-    this.cookie_jar.setCookie(cookie_obj, '.deezer.com')
+    await this.cookie_jar.setCookie(cookie_obj.toString(), "https://www.deezer.com")
 
     let user_data = await this.gw.get_user_data()
     // Check if user logged in
@@ -108,7 +110,7 @@ export class Deezer{
         })
       })
     } else {
-      this.childs.append({
+      this.childs.push({
         'id': user_data.USER.USER_ID,
         'name': user_data.USER.BLOG_NAME,
         'picture': user_data.USER.USER_PICTURE || ""
@@ -124,4 +126,12 @@ export class Deezer{
     return [this.current_user, this.selected_account]
   }
 
+}
+
+module.exports = {
+  TrackFormats,
+  Deezer,
+  api: {...require('./api.js')},
+  gw: {...require('./gw.js')},
+  utils: {...require('./utils.js')}
 }
