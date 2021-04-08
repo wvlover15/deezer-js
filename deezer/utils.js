@@ -8,7 +8,7 @@ function map_user_track(track){
     link: 'https://www.deezer.com/track/'+track.SNG_ID,
     duration: track.DURATION,
     rank: track.RANK_SNG,
-    explicit_lyrics: int(track.EXPLICIT_LYRICS) > 0,
+    explicit_lyrics: parseInt(track.EXPLICIT_LYRICS) > 0,
     explicit_content_lyrics: track.EXPLICIT_TRACK_CONTENT.EXPLICIT_COVER_STATUS,
     explicit_content_cover: track.EXPLICIT_TRACK_CONTENT.EXPLICIT_LYRICS_STATUS,
     time_add: track.DATE_ADD,
@@ -126,11 +126,11 @@ function map_album(album){
     fans: album.RANK,
     rating: 0, // TODO: Needs to be checked
     release_date: album.PHYSICAL_RELEASE_DATE,
-    record_type: RELEASE_TYPE[int(album.TYPE)] || "unknown",
+    record_type: RELEASE_TYPE[parseInt(album.TYPE)] || "unknown",
     available: true, // TODO: Needs to be checked
     alternative: null, // TODO: Needs to be checked
     tracklist: `https://api.deezer.com/album/${album.ALB_ID}/tracks`,
-    explicit_lyrics: int(album.EXPLICIT_LYRICS) > 0,
+    explicit_lyrics: parseInt(album.EXPLICIT_LYRICS) > 0,
     explicit_content_lyrics: 2, // TODO: Needs to be checked
     explicit_content_cover: 2, // TODO: Needs to be checked
     contributors: [], // TODO: Needs to be checked
@@ -157,9 +157,9 @@ function map_artist_album(album){
     genre_id: album.GENRE_ID,
     fans: album.RANK,
     release_date: album.PHYSICAL_RELEASE_DATE,
-    record_type: RELEASE_TYPE[int(album.TYPE)] || "unknown",
+    record_type: RELEASE_TYPE[parseInt(album.TYPE)] || "unknown",
     tracklist: `https://api.deezer.com/album/${album.ALB_ID}/tracks`,
-    explicit_lyrics: int(album.EXPLICIT_LYRICS) > 0,
+    explicit_lyrics: parseInt(album.EXPLICIT_LYRICS) > 0,
     type: album.__TYPE__,
     // Extras
     nb_tracks: album.NUMBER_TRACK,

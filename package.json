@@ -1,6 +1,6 @@
 {
   "name": "deezer-js",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "A wrapper for all Deezer's APIs",
   "main": "deezer/index.js",
   "scripts": {

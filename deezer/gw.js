@@ -61,7 +61,7 @@ class GW{
     }catch (e){
       console.log(e)
       await new Promise(r => setTimeout(r, 2000)) // sleep(2000ms)
-      return await this.api_call(method, args, params)
+      return this.api_call(method, args, params)
     }
     if (result_json.error.length) throw new GWAPIError(result_json.error)
     return result_json.results
@@ -367,7 +367,7 @@ class GW{
 
   async get_track_with_fallback(sng_id){
     let body
-    if (int(sng_id) > 0){
+    if (parseInt(sng_id) > 0){
       try{ body = await this.get_track_page(sng_id) }
       catch (e) {}
     }

@@ -36,7 +36,7 @@ class API{
     } catch (e) {
       console.log(e)
       await new Promise(r => setTimeout(r, 2000)) // sleep(2000ms)
-      return await this.api_call(method, args)
+      return this.api_call(method, args)
     }
     if (result_json.error){
       if (result_json.error.code){
