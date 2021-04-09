@@ -306,10 +306,6 @@ class API{
     return this.api_call(`user/${user_id}/artists`, {index, limit})
   }
 
-  get_user_artists(user_id, index=0, limit=25){
-    return this.api_call(`user/${user_id}/artists`, {index, limit})
-  }
-
   get_user_flow(user_id, index=0, limit=25){
     return this.api_call(`user/${user_id}/flow`, {index, limit})
   }
@@ -337,8 +333,8 @@ class API{
   // Extra calls
 
   async get_countries_charts(){
-    let temp = await this.get_user_playlists('637006841', limit=-1)['data']
-    result = temp.sort((a, b) => a.title.localeCompare(b.title)) // Sort all playlists
+    let temp = await this.get_user_playlists('637006841', 0, -1)['data']
+    let result = temp.sort((a, b) => a.title.localeCompare(b.title)) // Sort all playlists
     if (!result[0].title.startsWith('Top')) result.shift() // Remove loved tracks playlist
     return result
   }
@@ -349,19 +345,19 @@ class API{
     track = track.replace("–", "-").replace("’", "'")
     album = album.replace("–", "-").replace("’", "'")
 
-    let resp = await this.advanced_search(artist=artist, track=track, album=album, limit=1)
-    if (resp.data.length > 0) return resp.data[0].id
+    let resp = await this.advanced_search(artist, track, album)
+    if (resp.data.length) return resp.data[0].id
 
-    resp = await this.advanced_search(artist=artist, track=track, limit=1)
-    if (resp.data.length > 0) return resp.data[0].id
+    resp = await this.advanced_search(artist, track)
+    if (resp.data.length) return resp.data[0].id
 
     // Try removing version
     if ( track.indexOf("(") != -1 && track.indexOf(")") != -1 && track.indexOf("(") < track.indexOf(")") ){
-      resp = await this.advanced_search(artist=artist, track=track.split("(")[0], limit=1)
-      if (resp.data.length > 0) return resp.data[0].id
+      resp = await this.advanced_search(artist, track.split("(")[0],)
+      if (resp.data.length) return resp.data[0].id
     } else if ( track.indexOf(" - ") != -1) {
-      resp = await this.advanced_search(artist=artist, track=track.split(" - ")[0], limit=1)
-      if (resp.data.length > 0) return resp.data[0].id
+      resp = await this.advanced_search(artist, track.split(" - ")[0])
+      if (resp.data.length) return resp.data[0].id
     }
 
     return "0"

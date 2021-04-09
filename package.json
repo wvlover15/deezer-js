@@ -1,6 +1,6 @@
 {
   "name": "deezer-js",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "A wrapper for all Deezer's APIs",
   "main": "deezer/index.js",
   "scripts": {
@@ -15,5 +15,8 @@
   "dependencies": {
     "got": "^11.8.2",
     "tough-cookie": "^4.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^7.23.0"
   }
 }

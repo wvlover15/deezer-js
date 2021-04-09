@@ -40,8 +40,8 @@ class GW{
   }
 
   async api_call(method, args, params){
-    if (typeof args == "unasyncined") args = {}
-    if (typeof params == "unasyncined") params = {}
+    if (typeof args === undefined) args = {}
+    if (typeof params === undefined) params = {}
     let p = {
       api_version: "1.0",
       api_token: method == 'deezer.getUserData' ? 'null' : await this._get_token(),
@@ -119,7 +119,7 @@ class GW{
     return this.api_call('deezer.pageAlbum', {
       alb_id,
       lang: 'en',
-      header: True,
+      header: true,
       tab: 0
     })
   }
@@ -143,7 +143,7 @@ class GW{
     return this.api_call('deezer.pageArtist', {
       art_id,
       lang: 'en',
-      header: True,
+      header: true,
       tab: 0
     })
   }
@@ -153,7 +153,7 @@ class GW{
     let body = await this.api_call('artist.getTopTrack', {art_id, nb: limit})
     body.data.forEach(track => {
       track.POSITION = body.data.indexOf(track)
-      tracks_array.push(_track)
+      tracks_array.push(track)
     })
     return tracks_array
   }
@@ -176,7 +176,7 @@ class GW{
     return this.api_call('deezer.pagePlaylist', {
       playlist_id,
       lang: 'en',
-      header: True,
+      header: true,
       tab: 0
     })
   }
@@ -186,13 +186,13 @@ class GW{
     let body = await this.api_call('playlist.getSongs', {playlist_id, nb: -1})
     body.data.forEach(track => {
       track.POSITION = body.data.indexOf(track)
-      tracks_array.push(_track)
+      tracks_array.push(track)
     })
     return tracks_array
   }
 
   create_playlist(title, status=PlaylistStatus.PUBLIC, description, songs=[]){
-    newSongs = []
+    let newSongs = []
     songs.forEach(song => {
       newSongs.push([song, 0])
     });
@@ -205,7 +205,7 @@ class GW{
   }
 
   edit_playlist(playlist_id, title, status, description, songs=[]){
-    newSongs = []
+    let newSongs = []
     songs.forEach(song => {
       newSongs.push([song, 0])
     });
@@ -219,7 +219,7 @@ class GW{
   }
 
   add_songs_to_playlist(playlist_id, songs, offset=-1){
-    newSongs = []
+    let newSongs = []
     songs.forEach(song => {
       newSongs.push([song, 0])
     });
@@ -235,7 +235,7 @@ class GW{
   }
 
   remove_songs_from_playlist(playlist_id, songs){
-    newSongs = []
+    let newSongs = []
     songs.forEach(song => {
       newSongs.push([song, 0])
     });
@@ -302,7 +302,7 @@ class GW{
         LANG: 'en'
       })
     }
-    return this.api_call('page.get', params=params)
+    return this.api_call('page.get', {}, params)
   }
 
   search(query, index=0, limit=10, suggest=true, artist_suggest=true, top_tracks=true){
@@ -335,8 +335,9 @@ class GW{
     let ids = []
 
     // Get all releases
+    let response
     do {
-      response = await this.get_artist_discography(art_id, index=index, limit=limit)
+      response = await this.get_artist_discography(art_id, index, limit)
       releases.concat(response.data)
       index += limit
     } while (index < response.total)
@@ -344,21 +345,21 @@ class GW{
     releases.forEach(release => {
       if (ids.indexOf(release.ALB_ID) == -1){
         ids.push(release.ALB_ID)
-        obj = map_artist_album(release)
+        let obj = map_artist_album(release)
         if ((release.ART_ID == art_id || release.ART_ID != art_id && release.ROLE_ID == 0) && release.ARTISTS_ALBUMS_IS_OFFICIAL){
           // Handle all base record types
           if (!result[obj.record_type]) result[obj.record_type] = []
           result[obj.record_type].push(obj)
           result.all.push(obj)
-        }
-      } else {
-        if (release.ROLE_ID == 5) { // Handle albums where the artist is featured
-          if (!result.featured) result.featured = []
-          result.featured.push(obj)
-        } else if (release.ROLE_ID == 0) { // Handle "more" albums
-          if (!result.more) result.more = []
-          result.more.push(obj)
-          result.all.push(obj)
+        } else {
+          if (release.ROLE_ID == 5) { // Handle albums where the artist is featured
+            if (!result.featured) result.featured = []
+            result.featured.push(obj)
+          } else if (release.ROLE_ID == 0) { // Handle "more" albums
+            if (!result.more) result.more = []
+            result.more.push(obj)
+            result.all.push(obj)
+          }
         }
       }
     })
@@ -369,7 +370,7 @@ class GW{
     let body
     if (parseInt(sng_id) > 0){
       try{ body = await this.get_track_page(sng_id) }
-      catch (e) {}
+      catch (e) { /*nothing*/ }
     }
 
     if (body){
@@ -382,7 +383,7 @@ class GW{
   }
 
   async get_user_playlists(user_id, limit=25){
-    let user_profile_page = await this.get_user_profile_page(user_id, 'playlists', limit=limit)
+    let user_profile_page = await this.get_user_profile_page(user_id, 'playlists', limit)
     let blog_name = user_profile_page.DATA.USER.BLOG_NAME || "Unknown"
     let data = user_profile_page.TAB.playlists.data
     let result = []
@@ -393,7 +394,7 @@ class GW{
   }
 
   async get_user_albums(user_id, limit=25){
-    let data = await this.get_user_profile_page(user_id, 'albums', limit=limit).TAB.albums.data
+    let data = await this.get_user_profile_page(user_id, 'albums', limit).TAB.albums.data
     let result = []
     data.forEach(album => {
       result.push(map_user_album(album))
@@ -402,7 +403,7 @@ class GW{
   }
 
   async get_user_artists(user_id, limit=25){
-    let data = this.get_user_profile_page(user_id, 'artists', limit=limit).TAB.artists.data
+    let data = this.get_user_profile_page(user_id, 'artists', limit).TAB.artists.data
     let result = []
     data.forEach(artist => {
       result.push(map_user_artist(artist))
@@ -411,7 +412,7 @@ class GW{
   }
 
   async get_user_tracks(user_id, limit=25){
-    let data = this.get_user_profile_page(user_id, 'loved', limit=limit).TAB.loved.data
+    let data = this.get_user_profile_page(user_id, 'loved', limit).TAB.loved.data
     let result = []
     data.forEach(track => {
       result.push(map_user_track(track))
