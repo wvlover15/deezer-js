@@ -417,8 +417,8 @@ class API{
   // Extra calls
 
   async get_countries_charts(){
-    let temp = await this.get_user_playlists('637006841', {index:0, limit:-1})['data']
-    let result = temp.sort((a, b) => a.title.localeCompare(b.title)) // Sort all playlists
+    let temp = await this.get_user_playlists('637006841', {index:0, limit:-1})
+    let result = temp['data'].sort((a, b) => a.title.localeCompare(b.title)) // Sort all playlists
     if (!result[0].title.startsWith('Top')) result.shift() // Remove loved tracks playlist
     return result
   }
