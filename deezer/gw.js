@@ -76,7 +76,7 @@ class GW{
     return this.api_call('deezer.getUserData')
   }
 
-  get_user_profile_page(user_id, tab, options){
+  get_user_profile_page(user_id, tab, options={}){
     const limit = options.limit || 10
     return this.api_call('deezer.pageProfile', {user_id, tab, nb: limit})
   }
@@ -149,7 +149,7 @@ class GW{
     })
   }
 
-  async get_artist_top_tracks(art_id, options){
+  async get_artist_top_tracks(art_id, options={}){
     const limit = options.limit || 100
     let tracks_array = []
     let body = await this.api_call('artist.getTopTrack', {art_id, nb: limit})
@@ -160,7 +160,7 @@ class GW{
     return tracks_array
   }
 
-  get_artist_discography(art_id, options){
+  get_artist_discography(art_id, options={}){
     const index = options.index || 0
     const limit = options.limit || 25
     return this.api_call('album.getDiscography', {
@@ -320,7 +320,7 @@ class GW{
     })
   }
 
-  search_music(query, type, options){
+  search_music(query, type, options={}){
     const index = options.index || 0
     const limit = options.limit || 10
     return this.api_call('search.music', {
@@ -334,7 +334,7 @@ class GW{
 
   // Extra calls
 
-  async get_artist_discography_tabs(art_id, options){
+  async get_artist_discography_tabs(art_id, options={}){
     const limit = options.limit || 100
     let index = 0
     let releases = []
@@ -389,7 +389,7 @@ class GW{
     return body
   }
 
-  async get_user_playlists(user_id, options){
+  async get_user_playlists(user_id, options={}){
     const limit = options.limit || 25
     let user_profile_page = await this.get_user_profile_page(user_id, 'playlists', limit)
     let blog_name = user_profile_page.DATA.USER.BLOG_NAME || "Unknown"
@@ -401,7 +401,7 @@ class GW{
     return result
   }
 
-  async get_user_albums(user_id, options){
+  async get_user_albums(user_id, options={}){
     const limit = options.limit || 25
     let data = await this.get_user_profile_page(user_id, 'albums', limit).TAB.albums.data
     let result = []
@@ -411,7 +411,7 @@ class GW{
     return result
   }
 
-  async get_user_artists(user_id, options){
+  async get_user_artists(user_id, options={}){
     const limit = options.limit || 25
     let data = this.get_user_profile_page(user_id, 'artists', limit).TAB.artists.data
     let result = []
@@ -421,7 +421,7 @@ class GW{
     return result
   }
 
-  async get_user_tracks(user_id, options){
+  async get_user_tracks(user_id, options={}){
     const limit = options.limit || 25
     let data = this.get_user_profile_page(user_id, 'loved', limit).TAB.loved.data
     let result = []
