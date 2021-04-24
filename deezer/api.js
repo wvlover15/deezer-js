@@ -325,32 +325,32 @@ class API{
   }
 
   search_album(query, options={}){
-    const args = this._generate_search_args(query, options={})
+    const args = this._generate_search_args(query, options)
     return this.api_call('search/album', args)
   }
 
   search_artist(query, options={}){
-    const args = this._generate_search_args(query, options={})
+    const args = this._generate_search_args(query, options)
     return this.api_call('search/artist', args)
   }
 
   search_playlist(query, options={}){
-    const args = this._generate_search_args(query, options={})
+    const args = this._generate_search_args(query, options)
     return this.api_call('search/playlist', args)
   }
 
   search_radio(query, options={}){
-    const args = this._generate_search_args(query, options={})
+    const args = this._generate_search_args(query, options)
     return this.api_call('search/radio', args)
   }
 
   search_track(query, options={}){
-    const args = this._generate_search_args(query, options={})
+    const args = this._generate_search_args(query, options)
     return this.api_call('search/track', args)
   }
 
   search_user(query, options={}){
-    const args = this._generate_search_args(query, options={})
+    const args = this._generate_search_args(query, options)
     return this.api_call('search/user', args)
   }
 
