@@ -315,13 +315,13 @@ class API{
   }
 
   search(query, options={}){
-    const args = this._generate_search_args(query, options={})
+    const args = this._generate_search_args(query, options)
     return this.api_call('search', args)
   }
 
   advanced_search(filters, options={}){
     const query = this._generate_search_advanced_query(filters)
-    return this.search(query, options={})
+    return this.search(query, options)
   }
 
   search_album(query, options={}){

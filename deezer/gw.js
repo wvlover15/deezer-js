@@ -344,7 +344,7 @@ class GW{
     // Get all releases
     let response
     do {
-      response = await this.get_artist_discography(art_id, index, limit)
+      response = await this.get_artist_discography(art_id, {index, limit})
       releases.concat(response.data)
       index += limit
     } while (index < response.total)
@@ -391,7 +391,7 @@ class GW{
 
   async get_user_playlists(user_id, options={}){
     const limit = options.limit || 25
-    let user_profile_page = await this.get_user_profile_page(user_id, 'playlists', limit)
+    let user_profile_page = await this.get_user_profile_page(user_id, 'playlists', {limit})
     let blog_name = user_profile_page.DATA.USER.BLOG_NAME || "Unknown"
     let data = user_profile_page.TAB.playlists.data
     let result = []
@@ -403,7 +403,8 @@ class GW{
 
   async get_user_albums(user_id, options={}){
     const limit = options.limit || 25
-    let data = await this.get_user_profile_page(user_id, 'albums', limit).TAB.albums.data
+    let data = await this.get_user_profile_page(user_id, 'albums', {limit})
+    data = data.TAB.albums.data
     let result = []
     data.forEach(album => {
       result.push(map_user_album(album))
@@ -413,7 +414,8 @@ class GW{
 
   async get_user_artists(user_id, options={}){
     const limit = options.limit || 25
-    let data = this.get_user_profile_page(user_id, 'artists', limit).TAB.artists.data
+    let data = this.get_user_profile_page(user_id, 'artists', {limit})
+    data = data.TAB.artists.data
     let result = []
     data.forEach(artist => {
       result.push(map_user_artist(artist))
@@ -423,7 +425,8 @@ class GW{
 
   async get_user_tracks(user_id, options={}){
     const limit = options.limit || 25
-    let data = this.get_user_profile_page(user_id, 'loved', limit).TAB.loved.data
+    let data = this.get_user_profile_page(user_id, 'loved', {limit})
+    data = data.TAB.loved.data
     let result = []
     data.forEach(track => {
       result.push(map_user_track(track))
