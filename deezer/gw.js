@@ -345,7 +345,7 @@ class GW{
     let response
     do {
       response = await this.get_artist_discography(art_id, {index, limit})
-      releases.concat(response.data)
+      releases = releases.concat(response.data)
       index += limit
     } while (index < response.total)
 
