@@ -59,7 +59,7 @@ class GW{
         timeout: 30000
       }).json()
     }catch (e){
-      console.log(e)
+      console.debug("[ERROR] deezer.gw", method, args, e.message)
       await new Promise(r => setTimeout(r, 2000)) // sleep(2000ms)
       return this.api_call(method, args, params)
     }
