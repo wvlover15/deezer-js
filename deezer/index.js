@@ -159,7 +159,9 @@ class Deezer{
       return null
     }
 
-    return response.data[0].media[0].sources[0].url
+    if (response.data && response.data[0].media)
+      return response.data[0].media[0].sources[0].url
+    return null
   }
 
 }
