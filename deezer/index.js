@@ -107,9 +107,9 @@ class Deezer{
           'id': child.USER_ID,
           'name': child.BLOG_NAME,
           'picture': child.USER_PICTURE || "",
-          'license_token': child.OPTIONS.license_token,
-          'can_stream_hq': child.OPTIONS.web_hq || child.OPTIONS.mobile_hq,
-          'can_stream_lossless': child.OPTIONS.web_lossless || child.OPTIONS.mobile_lossless
+          'license_token': user_data.USER.OPTIONS.license_token,
+          'can_stream_hq': user_data.USER.OPTIONS.web_hq || user_data.USER.OPTIONS.mobile_hq,
+          'can_stream_lossless': user_data.USER.OPTIONS.web_lossless || user_data.USER.OPTIONS.mobile_lossless
         })
       })
     } else {
