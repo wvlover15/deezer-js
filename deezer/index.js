@@ -106,14 +106,20 @@ class Deezer{
         this.childs.push({
           'id': child.USER_ID,
           'name': child.BLOG_NAME,
-          'picture': child.USER_PICTURE || ""
+          'picture': child.USER_PICTURE || "",
+          'license_token': child.OPTIONS.license_token,
+          'can_stream_hq': child.OPTIONS.web_hq || child.OPTIONS.mobile_hq,
+          'can_stream_lossless': child.OPTIONS.web_lossless || child.OPTIONS.mobile_lossless
         })
       })
     } else {
       this.childs.push({
         'id': user_data.USER.USER_ID,
         'name': user_data.USER.BLOG_NAME,
-        'picture': user_data.USER.USER_PICTURE || ""
+        'picture': user_data.USER.USER_PICTURE || "",
+        'license_token': user_data.USER.OPTIONS.license_token,
+        'can_stream_hq': user_data.USER.OPTIONS.web_hq || user_data.USER.OPTIONS.mobile_hq,
+        'can_stream_lossless': user_data.USER.OPTIONS.web_lossless || user_data.USER.OPTIONS.mobile_lossless
       })
     }
   }
@@ -124,6 +130,36 @@ class Deezer{
     this.selected_account = child_n
 
     return [this.current_user, this.selected_account]
+  }
+
+  async get_tracks_urls(track_tokens){
+    if (!Array.isArray(track_tokens)) track_tokens = [track_tokens, ]
+    if (!this.current_user.license_token) return []
+
+    let response = await got.post("https://media.deezer.com/v1/get_url", {
+      headers: this.http_headers,
+      cookieJar: this.cookie_jar,
+      json:{
+        license_token: this.current_user.license_token,
+        media: [{
+          type: "FULL",
+          formats: [
+            { cipher: "BF_CBC_STRIPE", format: "FLAC" },
+            { cipher: "BF_CBC_STRIPE", format: "MP3_320" },
+            { cipher: "BF_CBC_STRIPE", format: "MP3_256" },
+            { cipher: "BF_CBC_STRIPE", format: "MP3_128" },
+            { cipher: "BF_CBC_STRIPE", format: "MP3_64" },
+            { cipher: "BF_CBC_STRIPE", format: "MP3_MISC" },
+            { cipher: "BF_CBC_STRIPE", format: "MP4_RA3" },
+            { cipher: "BF_CBC_STRIPE", format: "MP4_RA2" },
+            { cipher: "BF_CBC_STRIPE", format: "MP4_RA1" }
+          ]
+        }],
+        track_tokens
+      }
+    }).json()
+
+    return response.data
   }
 
 }
