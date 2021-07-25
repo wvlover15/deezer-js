@@ -132,34 +132,34 @@ class Deezer{
     return [this.current_user, this.selected_account]
   }
 
-  async get_tracks_urls(track_tokens){
+  async get_track_url(track_token, format) {
+    return this.get_tracks_url([track_token, ], format)
+  }
+
+  async get_tracks_url(track_tokens, format){
     if (!Array.isArray(track_tokens)) track_tokens = [track_tokens, ]
     if (!this.current_user.license_token) return []
 
-    let response = await got.post("https://media.deezer.com/v1/get_url", {
-      headers: this.http_headers,
-      cookieJar: this.cookie_jar,
-      json:{
-        license_token: this.current_user.license_token,
-        media: [{
-          type: "FULL",
-          formats: [
-            { cipher: "BF_CBC_STRIPE", format: "FLAC" },
-            { cipher: "BF_CBC_STRIPE", format: "MP3_320" },
-            { cipher: "BF_CBC_STRIPE", format: "MP3_256" },
-            { cipher: "BF_CBC_STRIPE", format: "MP3_128" },
-            { cipher: "BF_CBC_STRIPE", format: "MP3_64" },
-            { cipher: "BF_CBC_STRIPE", format: "MP3_MISC" },
-            { cipher: "BF_CBC_STRIPE", format: "MP4_RA3" },
-            { cipher: "BF_CBC_STRIPE", format: "MP4_RA2" },
-            { cipher: "BF_CBC_STRIPE", format: "MP4_RA1" }
-          ]
-        }],
-        track_tokens
-      }
-    }).json()
+    let response
 
-    return response.data
+    try {
+      response = await got.post("https://media.deezer.com/v1/get_url", {
+        headers: this.http_headers,
+        cookieJar: this.cookie_jar,
+        json: {
+          license_token: this.current_user.license_token,
+          media: [{
+            type: "FULL",
+            formats: [{ cipher: "BF_CBC_STRIPE", format: format }]
+          }],
+          track_tokens
+        }
+      }).json()
+    } catch (e){
+      return null
+    }
+
+    return response.data[0].media[0].sources[0].url
   }
 
 }
