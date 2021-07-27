@@ -109,7 +109,8 @@ class Deezer{
           'picture': child.USER_PICTURE || "",
           'license_token': user_data.USER.OPTIONS.license_token,
           'can_stream_hq': user_data.USER.OPTIONS.web_hq || user_data.USER.OPTIONS.mobile_hq,
-          'can_stream_lossless': user_data.USER.OPTIONS.web_lossless || user_data.USER.OPTIONS.mobile_lossless
+          'can_stream_lossless': user_data.USER.OPTIONS.web_lossless || user_data.USER.OPTIONS.mobile_lossless,
+          'country': user_data.COUNTRY
         })
       })
     } else {
@@ -119,7 +120,8 @@ class Deezer{
         'picture': user_data.USER.USER_PICTURE || "",
         'license_token': user_data.USER.OPTIONS.license_token,
         'can_stream_hq': user_data.USER.OPTIONS.web_hq || user_data.USER.OPTIONS.mobile_hq,
-        'can_stream_lossless': user_data.USER.OPTIONS.web_lossless || user_data.USER.OPTIONS.mobile_lossless
+        'can_stream_lossless': user_data.USER.OPTIONS.web_lossless || user_data.USER.OPTIONS.mobile_lossless,
+        'country': user_data.COUNTRY
       })
     }
   }
@@ -139,6 +141,10 @@ class Deezer{
   async get_tracks_url(track_tokens, format){
     if (!Array.isArray(track_tokens)) track_tokens = [track_tokens, ]
     if (!this.current_user.license_token) return []
+    if (
+      format === "FLAC" && !this.current_user.can_stream_lossless ||
+      format === "MP3_320" && !this.current_user.can_stream_hq
+    ) throw new WrongLicense(format)
 
     let response
 
@@ -159,11 +165,37 @@ class Deezer{
       return null
     }
 
-    if (response.data && response.data[0].media)
-      return response.data[0].media[0].sources[0].url
-    return null
+    if (response.data.length){
+      if (response.data[0].errors){
+        if (response.data[0].errors[0].code === 2002) throw new WrongGeolocation(this.current_user.country)
+        throw new DeezerError(JSON.stringify(response))
+      }
+      if (response.data[0].media) return response.data[0].media[0].sources[0].url
+    }
   }
+}
 
+class DeezerError extends Error {
+  constructor() {
+    super()
+    this.name = "DeezerError"
+  }
+}
+
+class WrongLicense extends DeezerError {
+  constructor(format) {
+    super()
+    this.name = "WrongLicense"
+    this.message = `Your account can't request urls for ${format} tracks`
+  }
+}
+
+class WrongGeolocation extends DeezerError {
+  constructor(country) {
+    super()
+    this.name = "WrongGeolocation"
+    this.message = `The track you requested can't be streamed in country ${country}`
+  }
 }
 
 module.exports = {
@@ -171,5 +203,10 @@ module.exports = {
   Deezer,
   api: {...require('./api.js')},
   gw: {...require('./gw.js')},
-  utils: {...require('./utils.js')}
+  utils: {...require('./utils.js')},
+  errors: {
+    DeezerError,
+    WrongLicense,
+    WrongGeolocation
+  }
 }
