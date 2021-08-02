@@ -2,6 +2,7 @@ const got = require('got')
 const {CookieJar, Cookie} = require('tough-cookie')
 const { API } = require('./api.js')
 const { GW } = require('./gw.js')
+const { DeezerError, WrongLicense, WrongGeolocation } = require('./errors.js')
 
 // Number associtation for formats
 const TrackFormats = {
@@ -175,38 +176,11 @@ class Deezer{
   }
 }
 
-class DeezerError extends Error {
-  constructor() {
-    super()
-    this.name = "DeezerError"
-  }
-}
-
-class WrongLicense extends DeezerError {
-  constructor(format) {
-    super()
-    this.name = "WrongLicense"
-    this.message = `Your account can't request urls for ${format} tracks`
-  }
-}
-
-class WrongGeolocation extends DeezerError {
-  constructor(country) {
-    super()
-    this.name = "WrongGeolocation"
-    this.message = `The track you requested can't be streamed in country ${country}`
-  }
-}
-
 module.exports = {
   TrackFormats,
   Deezer,
   api: {...require('./api.js')},
   gw: {...require('./gw.js')},
   utils: {...require('./utils.js')},
-  errors: {
-    DeezerError,
-    WrongLicense,
-    WrongGeolocation
-  }
+  errors: {...require('./errors.js')}
 }

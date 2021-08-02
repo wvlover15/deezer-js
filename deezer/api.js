@@ -1,4 +1,15 @@
 const got = require('got')
+const {
+  APIError,
+  ItemsLimitExceededException,
+  PermissionException,
+  InvalidTokenException,
+  WrongParameterException,
+  MissingParameterException,
+  InvalidQueryException,
+  DataException,
+  IndividualAccountChangedNotAllowedException
+} = require('./errors.js')
 
 // Possible values for order parameter in search
 const SearchOrder = {
@@ -448,72 +459,7 @@ class API{
   }
 }
 
-// Base class for Deezer exceptions
-class APIError extends Error {
-  constructor(message) {
-    super(message);
-    this.name = "APIError";
-  }
-}
-class ItemsLimitExceededException extends APIError {
-  constructor(message) {
-    super(message);
-    this.name = "ItemsLimitExceededException";
-  }
-}
-class PermissionException extends APIError {
-  constructor(message) {
-    super(message);
-    this.name = "PermissionException";
-  }
-}
-class InvalidTokenException extends APIError {
-  constructor(message) {
-    super(message);
-    this.name = "InvalidTokenException";
-  }
-}
-class WrongParameterException extends APIError {
-  constructor(message) {
-    super(message);
-    this.name = "WrongParameterException";
-  }
-}
-class MissingParameterException extends APIError {
-  constructor(message) {
-    super(message);
-    this.name = "MissingParameterException";
-  }
-}
-class InvalidQueryException extends APIError {
-  constructor(message) {
-    super(message);
-    this.name = "InvalidQueryException";
-  }
-}
-class DataException extends APIError {
-  constructor(message) {
-    super(message);
-    this.name = "DataException";
-  }
-}
-class IndividualAccountChangedNotAllowedException extends APIError {
-  constructor(message) {
-    super(message);
-    this.name = "IndividualAccountChangedNotAllowedException";
-  }
-}
-
 module.exports = {
   SearchOrder,
-  API,
-  APIError,
-  ItemsLimitExceededException,
-  PermissionException,
-  InvalidTokenException,
-  WrongParameterException,
-  MissingParameterException,
-  InvalidQueryException,
-  DataException,
-  IndividualAccountChangedNotAllowedException
+  API
 }

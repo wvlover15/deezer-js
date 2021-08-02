@@ -1,5 +1,6 @@
 const got = require('got')
 const {map_artist_album, map_user_track, map_user_artist, map_user_album, map_user_playlist} = require('./utils.js')
+const { GWAPIError } = require('./errors.js')
 
 // Explicit Content Lyrics
 const LyricsStatus = {
@@ -436,18 +437,9 @@ class GW{
 
 }
 
-// Base class for Deezer exceptions
-class GWAPIError extends Error {
-  constructor(message) {
-    super(message);
-    this.name = "APIError";
-  }
-}
-
 module.exports = {
   LyricsStatus,
   PlaylistStatus,
   EMPTY_TRACK_OBJ,
-  GW,
-  GWAPIError
+  GW
 }
