@@ -141,7 +141,7 @@ class Deezer{
 
   async get_tracks_url(track_tokens, format){
     if (!Array.isArray(track_tokens)) track_tokens = [track_tokens, ]
-    if (!this.current_user.license_token) return []
+    if (!this.current_user.license_token) return null
     if (
       format === "FLAC" && !this.current_user.can_stream_lossless ||
       format === "MP3_320" && !this.current_user.can_stream_hq
