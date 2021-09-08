@@ -104,7 +104,7 @@ class Deezer{
 
   async _post_login(user_data){
     this.childs = []
-    let family = user_data.USER.MULTI_ACCOUNT.ENABLED
+    let family = user_data.USER.MULTI_ACCOUNT.ENABLED && !user_data.USER.MULTI_ACCOUNT.IS_SUB_ACCOUNT
     if (family){
       let childs = await this.gw.get_child_accounts()
       childs.forEach(child => {
