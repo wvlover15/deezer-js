@@ -108,15 +108,17 @@ class Deezer{
     if (family){
       let childs = await this.gw.get_child_accounts()
       childs.forEach(child => {
-        this.childs.push({
-          'id': child.USER_ID,
-          'name': child.BLOG_NAME,
-          'picture': child.USER_PICTURE || "",
-          'license_token': user_data.USER.OPTIONS.license_token,
-          'can_stream_hq': user_data.USER.OPTIONS.web_hq || user_data.USER.OPTIONS.mobile_hq,
-          'can_stream_lossless': user_data.USER.OPTIONS.web_lossless || user_data.USER.OPTIONS.mobile_lossless,
-          'country': user_data.COUNTRY
-        })
+        if (child.EXTRA_FAMILY.IS_LOGGABLE_AS) {
+          this.childs.push({
+            'id': child.USER_ID,
+            'name': child.BLOG_NAME,
+            'picture': child.USER_PICTURE || "",
+            'license_token': user_data.USER.OPTIONS.license_token,
+            'can_stream_hq': user_data.USER.OPTIONS.web_hq || user_data.USER.OPTIONS.mobile_hq,
+            'can_stream_lossless': user_data.USER.OPTIONS.web_lossless || user_data.USER.OPTIONS.mobile_lossless,
+            'country': user_data.COUNTRY
+          })
+        }
       })
     } else {
       this.childs.push({
