@@ -41,7 +41,7 @@ class Deezer{
     this.http_headers['Accept-Language'] = lang
   }
 
-  async login(email, password, re_captcha_token, child){
+  async login(email, password, re_captcha_token, child=0){
     if (child) child = parseInt(child)
     // Check if user already logged in
     let user_data = await this.gw.get_user_data()
@@ -69,17 +69,14 @@ class Deezer{
     }
     user_data = await this.gw.get_user_data()
     await this._post_login(user_data)
-    if (!child && user_data.USER.MULTI_ACCOUNT.CHILD_COUNT) child = (user_data.USER.MULTI_ACCOUNT.CHILD_COUNT -1) || 0
-    else child = 0
     this.change_account(child)
     this.logged_in = true
     return true
   }
 
-  async login_via_arl(arl, child){
+  async login_via_arl(arl, child=0){
     arl = arl.trim()
     if (child) child = parseInt(child)
-
     // Create cookie
     let cookie_obj = new Cookie({
       key: 'arl',
@@ -97,8 +94,6 @@ class Deezer{
       return false
     }
     await this._post_login(user_data)
-    if (!child && user_data.USER.MULTI_ACCOUNT.CHILD_COUNT) child = (user_data.USER.MULTI_ACCOUNT.CHILD_COUNT -1) || 0
-    else child = 0
     this.change_account(child)
     this.logged_in = true
     return true
