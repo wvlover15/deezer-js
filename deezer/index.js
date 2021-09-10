@@ -70,6 +70,7 @@ class Deezer{
     user_data = await this.gw.get_user_data()
     await this._post_login(user_data)
     if (!child && user_data.USER.MULTI_ACCOUNT.CHILD_COUNT) child = (user_data.USER.MULTI_ACCOUNT.CHILD_COUNT -1) || 0
+    else child = 0
     this.change_account(child)
     this.logged_in = true
     return true
@@ -97,6 +98,7 @@ class Deezer{
     }
     await this._post_login(user_data)
     if (!child && user_data.USER.MULTI_ACCOUNT.CHILD_COUNT) child = (user_data.USER.MULTI_ACCOUNT.CHILD_COUNT -1) || 0
+    else child = 0
     this.change_account(child)
     this.logged_in = true
     return true
