@@ -133,18 +133,24 @@ class Deezer{
   }
 
   async get_track_url(track_token, format) {
-    return this.get_tracks_url([track_token, ], format)
+    let tracks = await this.get_tracks_url([track_token, ], format)
+    if (tracks.length > 0){
+      if (tracks[0] instanceof DeezerError) throw tracks[0]
+      else return tracks[0]
+    }
+    return null
   }
 
   async get_tracks_url(track_tokens, format){
     if (!Array.isArray(track_tokens)) track_tokens = [track_tokens, ]
-    if (!this.current_user.license_token) return null
+    if (!this.current_user.license_token) return []
     if (
       format === "FLAC" && !this.current_user.can_stream_lossless ||
       format === "MP3_320" && !this.current_user.can_stream_hq
     ) throw new WrongLicense(format)
 
     let response
+    let result = []
 
     try {
       response = await got.post("https://media.deezer.com/v1/get_url", {
@@ -160,16 +166,23 @@ class Deezer{
         }
       }).json()
     } catch (e){
-      return null
+      return []
     }
 
     if (response.data.length){
-      if (response.data[0].errors){
-        if (response.data[0].errors[0].code === 2002) throw new WrongGeolocation(this.current_user.country)
-        throw new DeezerError(JSON.stringify(response))
-      }
-      if (response.data[0].media) return response.data[0].media[0].sources[0].url
+      response.data.forEach(data =>{
+        if (data.errors){
+          if (data.errors[0].code === 2002){
+            result.push(new WrongGeolocation(this.current_user.country))
+          }else {
+            result.push(new DeezerError(JSON.stringify(response)))
+          }
+        }
+        if (data.media) result.push(data.media[0].sources[0].url)
+        else result.push(null)
+      })
     }
+    return result
   }
 }
 
