@@ -17,10 +17,9 @@ const TrackFormats = {
 }
 
 class Deezer{
-  constructor(accept_language=""){
+  constructor(){
     this.http_headers = {
-      "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36",
-      "Accept-Language": accept_language
+      "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36"
     }
     this.cookie_jar = new CookieJar()
 
@@ -31,14 +30,6 @@ class Deezer{
 
     this.api = new API(this.cookie_jar, this.http_headers)
     this.gw = new GW(this.cookie_jar, this.http_headers)
-  }
-
-  get_accept_language(){
-    return this.http_headers['Accept-Language']
-  }
-
-  set_accept_language(lang){
-    this.http_headers['Accept-Language'] = lang
   }
 
   async login(email, password, re_captcha_token, child=0){
@@ -113,7 +104,8 @@ class Deezer{
             'license_token': user_data.USER.OPTIONS.license_token,
             'can_stream_hq': user_data.USER.OPTIONS.web_hq || user_data.USER.OPTIONS.mobile_hq,
             'can_stream_lossless': user_data.USER.OPTIONS.web_lossless || user_data.USER.OPTIONS.mobile_lossless,
-            'country': user_data.COUNTRY
+            'country': user_data.USER.OPTIONS.license_country,
+            'language': user_data.USER.SETTING.global.language
           })
         }
       })
@@ -125,7 +117,8 @@ class Deezer{
         'license_token': user_data.USER.OPTIONS.license_token,
         'can_stream_hq': user_data.USER.OPTIONS.web_hq || user_data.USER.OPTIONS.mobile_hq,
         'can_stream_lossless': user_data.USER.OPTIONS.web_lossless || user_data.USER.OPTIONS.mobile_lossless,
-        'country': user_data.COUNTRY
+        'country': user_data.USER.OPTIONS.license_country,
+        'language': user_data.USER.SETTING.global.language
       })
     }
   }
@@ -134,6 +127,7 @@ class Deezer{
     if (this.childs.length-1 < child_n) child_n = 0
     this.current_user = this.childs[child_n]
     this.selected_account = child_n
+    this.http_headers["Accept-Language"] = this.current_user.language
 
     return [this.current_user, this.selected_account]
   }
