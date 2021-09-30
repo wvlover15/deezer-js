@@ -45,6 +45,9 @@ class Deezer{
     let login = await got.post("https://www.deezer.com/ajax/action.php", {
       headers: this.http_headers,
       cookieJar: this.cookie_jar,
+      https: {
+        rejectUnauthorized: false
+      },
       form:{
           type: 'login',
           mail: email,
@@ -156,6 +159,9 @@ class Deezer{
       response = await got.post("https://media.deezer.com/v1/get_url", {
         headers: this.http_headers,
         cookieJar: this.cookie_jar,
+        https: {
+					rejectUnauthorized: false
+				},
         json: {
           license_token: this.current_user.license_token,
           media: [{

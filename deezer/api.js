@@ -42,6 +42,9 @@ class API{
         searchParams: args,
         cookieJar: this.cookie_jar,
         headers: this.http_headers,
+        https: {
+					rejectUnauthorized: false
+				},
         timeout: 30000
       }).json()
     } catch (e) {
