@@ -127,7 +127,7 @@ class Deezer{
     if (this.childs.length-1 < child_n) child_n = 0
     this.current_user = this.childs[child_n]
     this.selected_account = child_n
-    this.http_headers["Accept-Language"] = this.current_user.language
+    this.http_headers["Accept-Language"] = this.current_user.language.replace(/[^0-9A-Za-z *,-.;=]/g, '')
 
     return [this.current_user, this.selected_account]
   }
