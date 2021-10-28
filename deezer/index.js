@@ -36,10 +36,8 @@ class Deezer{
     if (child) child = parseInt(child)
     // Check if user already logged in
     let user_data = await this.gw.get_user_data()
-    if (user_data.USER.USER_ID == 0){
-      this.logged_in = false
-      return false
-    }
+    if (!user_data || user_data && Object.keys(user_data).length === 0) return this.logged_in = false
+    if (user_data.USER.USER_ID == 0) return this.logged_in = false
     // Get the checkFormLogin
     let check_form_login = user_data.checkFormLogin
     let login = await got.post("https://www.deezer.com/ajax/action.php", {
@@ -83,10 +81,9 @@ class Deezer{
 
     let user_data = await this.gw.get_user_data()
     // Check if user logged in
-    if (user_data.USER.USER_ID == 0){
-      this.logged_in = false
-      return false
-    }
+    if (!user_data || user_data && Object.keys(user_data).length === 0) return this.logged_in = false
+    if (user_data.USER.USER_ID == 0) return this.logged_in = false
+
     await this._post_login(user_data)
     this.change_account(child)
     this.logged_in = true
