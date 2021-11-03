@@ -48,9 +48,10 @@ class API{
         timeout: 30000
       }).json()
     } catch (e) {
-      console.debug("[ERROR] deezer.api", method, args, e.message)
-      await new Promise(r => setTimeout(r, 2000)) // sleep(2000ms)
-      return this.api_call(method, args)
+      console.debug("[ERROR] deezer.api", method, args, e.name, e.message)
+      // await new Promise(r => setTimeout(r, 2000)) // sleep(2000ms)
+      // return this.api_call(method, args)
+      throw new APIError(`${method} ${args}:: ${e.name}: ${e.message}`)
     }
     if (result_json.error){
       if (result_json.error.code){
@@ -67,7 +68,7 @@ class API{
         if (result_json.error.code == 800) throw new DataException(`DataException: ${method} ${result_json.error.message || ""}`)
         if (result_json.error.code == 901) throw new IndividualAccountChangedNotAllowedException(`IndividualAccountChangedNotAllowedException: ${method} ${result_json.error.message || ""}`)
       }
-      throw APIError(result_json.error)
+      throw new APIError(result_json.error)
     }
     return result_json
   }

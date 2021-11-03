@@ -63,9 +63,10 @@ class GW{
         timeout: 30000
       }).json()
     }catch (e){
-      console.debug("[ERROR] deezer.gw", method, args, e.message)
-      await new Promise(r => setTimeout(r, 2000)) // sleep(2000ms)
-      return this.api_call(method, args, params)
+      console.debug("[ERROR] deezer.gw", method, args, e.name, e.message)
+      // await new Promise(r => setTimeout(r, 2000)) // sleep(2000ms)
+      // return this.api_call(method, args, params)
+      throw new GWAPIError(`${method} ${args}:: ${e.name}: ${e.message}`)
     }
     if (result_json.error.length) throw new GWAPIError(result_json.error)
     return result_json.results
