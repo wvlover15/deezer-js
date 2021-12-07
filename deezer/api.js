@@ -49,8 +49,10 @@ class API{
       }).json()
     } catch (e) {
       console.debug("[ERROR] deezer.api", method, args, e.name, e.message)
-      // await new Promise(r => setTimeout(r, 2000)) // sleep(2000ms)
-      // return this.api_call(method, args)
+      if (["ECONNABORTED", "ECONNREFUSED", "ECONNRESET", "ENETRESET", "ETIMEDOUT"].includes(e.code)){
+        await new Promise(r => setTimeout(r, 2000)) // sleep(2000ms)
+        return this.api_call(method, args)
+      }
       throw new APIError(`${method} ${args}:: ${e.name}: ${e.message}`)
     }
     if (result_json.error){
