@@ -86,6 +86,12 @@ class GW{
     return this.api_call('deezer.pageProfile', {user_id, tab, nb: limit})
   }
 
+  get_user_favorite_ids(checksum = null, options={}){
+    const limit = options.limit || 10000
+    const start = options.start || 0
+    return this.api_call('song.getFavoriteIds', {nb: limit, start, checksum})
+  }
+
   get_child_accounts(){
     return this.api_call('deezer.getChildAccounts')
   }
@@ -102,7 +108,7 @@ class GW{
     return this.api_call('song.getLyrics', {sng_id})
   }
 
-  async get_tracks_gw(sng_ids){
+  async get_tracks(sng_ids){
     let tracks_array = []
     let body = await this.api_call('song.getListData', {sng_ids})
     let errors = 0
@@ -419,7 +425,7 @@ class GW{
 
   async get_user_artists(user_id, options={}){
     const limit = options.limit || 25
-    let data = this.get_user_profile_page(user_id, 'artists', {limit})
+    let data = await this.get_user_profile_page(user_id, 'artists', {limit})
     data = data.TAB.artists.data
     let result = []
     data.forEach(artist => {
@@ -429,11 +435,26 @@ class GW{
   }
 
   async get_user_tracks(user_id, options={}){
+    let user_data = await this.get_user_data()
+    if (user_data.USER.USER_ID == user_id) return this.get_my_favorite_tracks(options)
     const limit = options.limit || 25
     let data = this.get_user_profile_page(user_id, 'loved', {limit})
     data = data.TAB.loved.data
     let result = []
     data.forEach(track => {
+      result.push(map_user_track(track))
+    })
+    return result
+  }
+
+  async get_my_favorite_tracks(options={}){
+    const limit = options.limit || 25
+    const ids_raw = await this.get_user_favorite_ids(null, {limit})
+    const ids = ids_raw.data.map(x => x.SNG_ID)
+    let data = await this.get_tracks(ids)
+    let result = []
+    data.forEach((track, i) => {
+      track = {...track, ...ids_raw.data[i]}
       result.push(map_user_track(track))
     })
     return result
