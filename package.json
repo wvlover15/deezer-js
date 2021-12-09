@@ -1,5 +1,5 @@
 {
-  "name": "deezer-js",
+  "name": "@puyodead1/deezer-js",
   "version": "1.2.7",
   "description": "A wrapper for all Deezer's APIs",
   "main": "deezer/index.js",
