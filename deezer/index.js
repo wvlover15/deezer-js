@@ -33,7 +33,13 @@ class Deezer {
     this.gw = new GW(this.cookie_jar, this.http_headers);
   }
 
-  async login(email, password, re_captcha_token, child = 0) {
+  async login(
+    email,
+    password,
+    re_captcha_token,
+    language = "en-US,en;q=0.5",
+    child = 0
+  ) {
     if (child) child = parseInt(child);
     // Check if user already logged in
     let user_data = await this.gw.get_user_data();
@@ -65,7 +71,7 @@ class Deezer {
     }
     user_data = await this.gw.get_user_data();
     await this._post_login(user_data);
-    this.change_account(child);
+    this.change_account(child, language);
     this.logged_in = true;
     return true;
   }
@@ -139,13 +145,11 @@ class Deezer {
     }
   }
 
-  change_account(child_n) {
+  change_account(child_n, language) {
     if (this.childs.length - 1 < child_n) child_n = 0;
     this.current_user = this.childs[child_n];
     this.selected_account = child_n;
-    this.http_headers["Accept-Language"] =
-      this.current_user?.language?.replace(/[^0-9A-Za-z *,-.;=]/g, "") ??
-      "en-US,en;q=0.5";
+    this.http_headers["Accept-Language"] = language ?? "en-US,en;q=0.5";
 
     return [this.current_user, this.selected_account];
   }
